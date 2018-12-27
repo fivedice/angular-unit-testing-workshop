@@ -1,10 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { HomeComponent } from './home.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { OrderService } from '../order/order.service';
 import { GithubService } from '../common/github-service/github.service';
-import { Subject } from 'rxjs/Subject';
 import { By } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -63,7 +61,7 @@ fdescribe('HomeComponent', () => {
   it('can render angular version (spies)', () => {
     spyOn(service, 'getAngularLatestVersion').and.callFake(
       () => {
-        service['angularVersionSubject$'].next('123');
+        service['angularVersionSubject'].next('123');
       });
     fixture.detectChanges();
     expect(fixture.debugElement.nativeElement.innerText)

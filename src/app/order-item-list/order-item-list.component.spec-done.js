@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { OrderItemListComponent } from './order-item-list.component';
 import { OrderItem } from '../models/order-item.interface';
 import { OrderQuantity } from '../models/order-quantity.enum';

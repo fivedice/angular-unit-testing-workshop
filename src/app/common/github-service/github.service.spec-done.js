@@ -1,13 +1,13 @@
-import { TestBed, inject, async } from '@angular/core/testing';
+import { TestBed, async } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController }
-  from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule, HttpTestingController
+} from '@angular/common/http/testing';
 import { TestRequest } from '@angular/common/http/testing/src/request';
-
 import { GithubService } from './github.service';
 import { GithubResponse } from './github-response.interface';
 
-fdescribe('GithubService', () => {
+describe('GithubService', () => {
   let service: GithubService;
   let controller: HttpTestingController;
   let response: GithubResponse;
@@ -87,8 +87,8 @@ fdescribe('GithubService', () => {
   //   request.flush([response, response, versioned]);
   // }));
 
-  // // WHY do we need this test?
-  // // Look at the logic of the service code.
+  // WHY do we need this test?
+  // Look at the logic of the service code.
   // it('can return latest Angular version from bigger array', async(() => {
   //   service.angularVersionSubject$.subscribe((version: string) => {
   //     expect(version).toBe('2.0.0');

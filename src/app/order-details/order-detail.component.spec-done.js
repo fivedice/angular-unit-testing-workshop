@@ -1,14 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { OrderDetailComponent } from './order-detail.component';
 import { RouterTestingModule, } from '@angular/router/testing';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { OrderService } from '../order/order.service';
 import { OrderStatus } from '../models/order-status.enum';
 
-fdescribe('OrderDetailComponent', () => {
+describe('OrderDetailComponent', () => {
   let component: OrderDetailComponent;
   let fixture: ComponentFixture<OrderDetailComponent>;
   let orderService: OrderService;
@@ -40,7 +39,7 @@ fdescribe('OrderDetailComponent', () => {
   });
 
   it('should be blank by default', () => {
-    expect(fixture.debugElement.nativeElement.innerText).toContain('Name:\nStatus:\nItems:');
+    expect(fixture.debugElement.nativeElement.innerText).toContain('Items:\nName:\nStatus:');
   });
 
   it('can respond to new route params', () => {
@@ -55,10 +54,10 @@ fdescribe('OrderDetailComponent', () => {
     params.next({ id: 0 });
     fixture.detectChanges();
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(fixture.debugElement.nativeElement.innerText).toContain('Name: Unit Test 0\nStatus: 0\nItems:');
+    expect(fixture.debugElement.nativeElement.innerText).toContain('Items:\nName: Unit Test 0\nStatus: 0');
     params.next({ id: 1 });
     fixture.detectChanges();
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(fixture.debugElement.nativeElement.innerText).toContain('Name: Unit Test 1\nStatus: 0\nItems:');
+    expect(fixture.debugElement.nativeElement.innerText).toContain('Items:\nName: Unit Test 1\nStatus: 0');
   });
 });

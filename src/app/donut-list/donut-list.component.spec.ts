@@ -2,15 +2,14 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DonutListComponent } from './donut-list.component';
 
-describe('DonutListComponent', () => {
+xdescribe('DonutListComponent', () => {
   let component: DonutListComponent;
   let fixture: ComponentFixture<DonutListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ DonutListComponent ]
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {

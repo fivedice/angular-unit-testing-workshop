@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { OrderDetailComponent } from './order-detail.component';
 
 describe('OrderDetailComponent', () => {
@@ -32,5 +31,5 @@ describe('OrderDetailComponent', () => {
   // should be blank by default
 
   // can respond to new route params
-  
+
 });
