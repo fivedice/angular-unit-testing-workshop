@@ -1,8 +1,9 @@
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { By } from '@angular/platform-browser';
 
-describe('AppComponent', () => {
+fdescribe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
 
@@ -26,8 +27,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   }));
 
-  // should render title
+  it('should render title', () => {
+    app.name = 'Donut Shoppe';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toContain('Donut Shoppe');
+  });
 
-  // should have default title in H1
-  
+  it('should have default title in h1', () => {
+    fixture.detectChanges();
+    expect(
+      fixture.debugElement.query(By.css('h1')).nativeElement.innerText
+    ).toBe('Donut Shop');
+  });
 });
