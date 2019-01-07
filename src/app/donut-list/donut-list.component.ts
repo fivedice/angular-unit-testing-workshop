@@ -1,6 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { DonutService } from '../donut-list/donut.service';
-import { Subscription } from 'rxjs';
 import { Donut } from '../models/donut.interface';
 
 @Component({
@@ -9,7 +8,7 @@ import { Donut } from '../models/donut.interface';
   styleUrls: ['./donut-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DonutListComponent implements OnInit, OnDestroy {
+export class DonutListComponent implements OnInit {
 
   @Output()
   selectionChange: EventEmitter<Donut> = new EventEmitter<Donut>();
@@ -19,27 +18,15 @@ export class DonutListComponent implements OnInit, OnDestroy {
 
   donuts: Donut[] = [];
 
-  private subscriptions: Subscription[] = [];
-
   constructor(private donutService: DonutService,
               private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.subscriptions.push(
-      this.donutService.donutsChanged$.subscribe((doughnuts: Donut[]) => {
-        this.donuts = doughnuts.sort((a, b) => {
-          return (a < b) ? -1 : (a > b) ? 1 : 0;
-        });
-        this.changeDetector.markForCheck();
-      }));
-    this.donutService.getDonuts();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach((sub: Subscription) => {
-      if (!sub.closed) {
-        sub.unsubscribe();
-      }
+    this.donutService.getDonuts().subscribe((doughnuts: Donut[]) => {
+      this.donuts = doughnuts.sort((a, b) => {
+        return (a < b) ? -1 : (a > b) ? 1 : 0;
+      });
+      this.changeDetector.markForCheck();
     });
   }
 

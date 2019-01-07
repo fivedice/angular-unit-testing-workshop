@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DonutListComponent } from './donut-list.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { DonutService } from './donut.service';
+import { of } from 'rxjs';
+import { Donut } from '../models/donut.interface';
 
 xdescribe('DonutListComponent', () => {
   let component: DonutListComponent;
@@ -8,7 +12,11 @@ xdescribe('DonutListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DonutListComponent ]
+      declarations: [ DonutListComponent ],
+      providers: [
+        { provide: DonutService, useClass: MockDonutService }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -22,3 +30,15 @@ xdescribe('DonutListComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+class MockDonutService {
+  getDonuts() {
+    return of(<Donut[]>[{
+      id: 0,
+      name: '0 Donut'
+    }, {
+      id: 1,
+      name: '1 Donut'
+    }]);
+  }
+}
