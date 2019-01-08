@@ -9,12 +9,13 @@ import { Donut } from '../models/donut.interface';
 xdescribe('DonutListComponent', () => {
   let component: DonutListComponent;
   let fixture: ComponentFixture<DonutListComponent>;
+  const mockDonutService = jasmine.createSpyObj('DonutService', ['getDonuts']);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ DonutListComponent ],
       providers: [
-        { provide: DonutService, useClass: MockDonutService }
+        { provide: DonutService, useValue: mockDonutService }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
