@@ -1,10 +1,9 @@
+import { SelectableDirective } from './selectable.directive';
 import { Component } from '@angular/core';
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { SelectableDirective } from './selectable.directive';
-
-fdescribe('SelectableDirective', () => {
+describe('SelectableDirective', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
 
@@ -28,26 +27,35 @@ fdescribe('SelectableDirective', () => {
     expect(directive).toBeTruthy();
   });
 
+  // should not have active class when selected is false
   it('should not have active class when selected is false', () => {
-    expect(fixture.debugElement.query(By.css('div')).classes)
-      .not.toEqual({ active: true });
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('.active'))).toBeFalsy();
   });
 
+  // should have active class when selected is true
   it('should have active class when selected is true', () => {
     component.selected = true;
     fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('div')).classes)
-      .toEqual({ active: true });
+    expect(fixture.debugElement.query(By.css('.active'))).toBeTruthy();
   });
+
+  it('can toggle', () => {
+    component.selected = true;
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('.active'))).toBeTruthy();
+
+    component.selected = false;
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('.active'))).toBeFalsy();
+  });
+
 });
 
+// Test Component
 @Component({
-  selector: 'app-test',
-  template: `
-    <div appSelectable
-         [selected]="selected">
-      Hello
-    </div>`
+  selector: `app-test`,
+  template: `<div appSelectable [selected]="selected">Hello</div>`
 })
 class TestComponent {
   selected = false;

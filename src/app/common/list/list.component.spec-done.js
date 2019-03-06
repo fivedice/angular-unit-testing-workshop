@@ -1,9 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 
 import { ListComponent } from './list.component';
 import { ListItem } from './list-item.interface';
 import { SelectableDirective } from '../selectable.directive';
+import { By } from '@angular/platform-browser';
 
 interface UnitTestListItem extends ListItem {
   id: number;
@@ -50,6 +50,7 @@ function getItemStatusIcon(item: UnitTestListItem): string {
 describe('ListComponent', () => {
   let component: ListComponent;
   let fixture: ComponentFixture<ListComponent>;
+  const listItems = getListItems();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -64,60 +65,51 @@ describe('ListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ListComponent);
     component = fixture.componentInstance;
-    // This is the EASY way, but...
-    // Change detection will only run once per "each" on an OnPush component!
-    // HARDER way is to use a Test component. But only do that if you NEED to.
-    // Angular CLI generates this, but you want remove it:
-    // fixture.detectChanges();
-
-    // common to all tests:
-    component.getItemDisplay = getItemName;
-    component.listItems = getListItems();
+    // COMMON STUFF AND CHANGE DETECTION'
+    component.listItems = listItems;
+    component.itemIdAccessor = getItemId;
+    component.itemNameAccessor = getItemName;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  // Notice that we are not using async() and whenStable()!
+  // should render list items
   it('should render list items', () => {
     fixture.detectChanges();
-    // If you use whenStable(), that's fine.
-    // But you often don't NEED it.
-    // If your component doesn't have child components
-    // or other async activities then you don't need it.
-    // fixture.whenStable().then(() => {
-    const listItems =
-      fixture.debugElement.queryAll(By.directive(SelectableDirective));
-    expect(listItems.length).toBe(3);
-    expect(listItems[0].nativeElement.innerText).toBe('zero');
-    expect(listItems[1].nativeElement.innerText).toBe('one');
-    expect(listItems[2].nativeElement.innerText).toBe('two');
-    // });
+    const renderedListItems = fixture.debugElement.queryAll(By.css('li'));
+    expect(renderedListItems.length).toBe(3);
+    expect(renderedListItems[0].nativeElement.innerText)
+      .toContain(listItems[0].name);
+    expect(renderedListItems[1].nativeElement.innerText)
+      .toContain(listItems[1].name);
+    expect(renderedListItems[2].nativeElement.innerText)
+      .toContain(listItems[2].name);
   });
 
+  // should render pill values
   it('should render pill values', () => {
-    component.getPillDisplay = getItemPill;
     component.showPill = true;
-    fixture.detectChanges();
-    const listItems = fixture.debugElement.queryAll(By.css('.badge'));
-    expect(listItems.length).toBe(3);
-    expect(listItems[0].nativeElement.innerText).toBe('0');
-    expect(listItems[1].nativeElement.innerText).toBe('1');
-    expect(listItems[2].nativeElement.innerText).toBe('2');
-  });
-
-  it('can get item display', () => {
-    expect(component.getItemDisplay(component.listItems[0])).toBe('zero');
-  });
-
-  it('can get item pill value', () => {
     component.itemPillValueAccessor = getItemPill;
-    expect(component.getPillDisplay(component.listItems[0])).toBe(0);
+    fixture.detectChanges();
+    const pills = fixture.debugElement.queryAll(By.css('.badge-pill'));
+    expect(pills.length).toBe(3);
+    expect(pills[0].nativeElement.innerText).toContain(listItems[0].pill);
+    expect(pills[1].nativeElement.innerText).toContain(listItems[1].pill);
+    expect(pills[2].nativeElement.innerText).toContain(listItems[2].pill);
   });
 
-  it('can get item status icon', () => {
+  // should render status icon??? How?
+  it('should render status icon', () => {
+    component.showStatusIcon = true;
     component.itemStatusIconAccessor = getItemStatusIcon;
-    expect(component.getStatusIcon(component.listItems[0])).toBe('ZERO');
+    fixture.detectChanges();
+    const statusIcons = fixture.debugElement.queryAll(By.css('.status-icon'));
+    expect(statusIcons).toBeTruthy();
+    expect(statusIcons.length).toBe(3);
+    expect(statusIcons[0].nativeElement.innerText).toContain(listItems[0].icon);
   });
+
+  // ng test --code-coverage
 });

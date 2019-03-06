@@ -1,22 +1,14 @@
-import { TestBed } from '@angular/core/testing';
-
 import { QuantityPipe } from './quantity.pipe';
 import { OrderQuantity } from '../models/order-quantity.enum';
 
-fdescribe('QuantityPipe', () => {
-  let pipe: QuantityPipe;
+describe('QuantityPipe', () => {
+  const pipe = new QuantityPipe();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [QuantityPipe]
-    });
-    pipe = TestBed.get(QuantityPipe);
-  });
-
-  it('can create an instance', () => {
+  it('create an instance', () => {
     expect(pipe).toBeTruthy();
   });
 
+  // can transform OrderQuantity
   it('can transform OrderQuantity', () => {
     expect(pipe.transform(OrderQuantity.Single)).toBe(1);
     expect(pipe.transform(OrderQuantity.HalfDozen)).toBe(6);
@@ -24,7 +16,12 @@ fdescribe('QuantityPipe', () => {
     expect(pipe.transform(OrderQuantity.TwoDozen)).toBe(24);
   });
 
+  // returns zero for unknown OrderQuantity
   it('returns zero for unknown OrderQuantity', () => {
-    expect(pipe.transform(27)).toBe(0);
+    expect(pipe.transform(42)).toBe(0);
+  });
+
+  it('returns zero on undefined', () => {
+    expect(pipe.transform(undefined)).toBe(0);
   });
 });

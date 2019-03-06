@@ -1,8 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { OrderService } from '../order/order.service';
 import { Order } from '../models/order.interface';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-order-details',
@@ -10,16 +8,10 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./order-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OrderDetailsComponent implements OnInit {
+export class OrderDetailsComponent {
 
-  private subscriptions: Subscription[] = [];
 
-  constructor(private router: Router,
-              private orderService: OrderService,
-              private changeDetector: ChangeDetectorRef) { }
-
-  ngOnInit() {
-  }
+  constructor(private router: Router) { }
 
   onSelectionChanged(orders: Order[]) {
     if (orders.length > 0) {

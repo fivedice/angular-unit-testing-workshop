@@ -1,13 +1,11 @@
-import { TestBed, async } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
-import {
-  HttpClientTestingModule, HttpTestingController
-} from '@angular/common/http/testing';
-import { TestRequest } from '@angular/common/http/testing/src/request';
+import { TestBed, inject } from '@angular/core/testing';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { GithubService } from './github.service';
 import { GithubResponse } from './github-response.interface';
 
 describe('GithubService', () => {
+  // globals
   let service: GithubService;
   let controller: HttpTestingController;
   let response: GithubResponse;
@@ -18,10 +16,9 @@ describe('GithubService', () => {
         HttpClientModule,
         HttpClientTestingModule
       ],
-      providers: [
-        GithubService
-      ]
+      providers: [GithubService]
     });
+
     service = TestBed.get(GithubService);
     controller = TestBed.get(HttpTestingController);
     response = {
@@ -39,66 +36,61 @@ describe('GithubService', () => {
     expect(service).toBeTruthy();
   });
 
-  // This just tests that the get call works, not what it returns.
-  it('can call getAngularLatestVersion', async(() => {
+  // test that a get request is made (not the result) async
+  it('makes a GET', () => {
     service.getAngularLatestVersion();
-    const request: TestRequest =
-      controller.expectOne('https://api.github.com/repos/angular/angular/tags');
-    request.flush([response]);
-    expect(request.request.method).toEqual('GET');
-  }));
+    const request: TestRequest = controller.expectOne('https://api.github.com/repos/angular/angular/tags');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.body).toBeNull();
+  });
 
+  // test that the version is returned async
+  it('returns undefined if no numeric version found', () => {
+    service.angularVersionSubject$.subscribe(
+      (version: string) => {
+        expect(version).toBeUndefined();
+      }
+    );
+    service.getAngularLatestVersion();
+    controller.expectOne('https://api.github.com/repos/angular/angular/tags')
+      .flush([response, response, response]);
+  });
 
+  it('returns undefined if empty result from github', () => {
+    service.angularVersionSubject$.subscribe(
+      (version: string) => {
+        expect(version).toBeUndefined();
+      }
+    );
+    service.getAngularLatestVersion();
+    controller.expectOne('https://api.github.com/repos/angular/angular/tags')
+      .flush([]);
+  });
 
-  // STOP HERE and cover OBSERVABLES
+  it('returns a version', () => {
+    service.angularVersionSubject$.subscribe(
+      (version: string) => {
+        expect(version).toBe('123.0.0');
+      }
+    );
+    service.getAngularLatestVersion();
+    controller.expectOne('https://api.github.com/repos/angular/angular/tags')
+      .flush([
+        response, // 'unittest' shouldn't match
+        { ...response, name: 'a123.0.0' }, // 'a' shouldn't match
+        { ...response, name: '123.0.0' }, // 1 should match
+        { ...response, name: '234.1.1' } // .find won't get this far
+      ]);
+  });
 
-
-
-  // it('can return latest Angular version', async(() => {
-  //   service.angularVersionSubject$.subscribe((version: string) => {
-  //     expect(version).toBe('123.0.0');
-  //     // fail();
-  //   });
-  //   response.name = '123.0.0';
+  // it('can handle no data', () => {
+  //   service.angularVersionSubject$.subscribe(
+  //     (version: string) => {
+  //       expect(version).toBeUndefined();
+  //     }
+  //   );
   //   service.getAngularLatestVersion();
-  //   const request: TestRequest =
-  //     controller.expectOne('https://api.github.com/repos/angular/angular/tags');
-  //   request.flush([response]);
-  // }));
-
-  // it('will return undefined if no version number found', async(() => {
-  //   service.angularVersionSubject$.subscribe((version: string) => {
-  //     expect(version).toBeUndefined();
-  //   });
-  //   service.getAngularLatestVersion();
-  //   const request: TestRequest =
-  //     controller.expectOne('https://api.github.com/repos/angular/angular/tags');
-  //   request.flush([response]);
-  // }));
-
-  // it('can return latest Angular version from bigger array', async(() => {
-  //   service.angularVersionSubject$.subscribe((version: string) => {
-  //     expect(version).toBe('1.0.0');
-  //   });
-  //   const versioned = Object.assign({}, response, { name: '1.0.0' });
-  //   service.getAngularLatestVersion();
-  //   const request: TestRequest =
-  //     controller.expectOne('https://api.github.com/repos/angular/angular/tags');
-  //   request.flush([response, response, versioned]);
-  // }));
-
-  // WHY do we need this test?
-  // Look at the logic of the service code.
-  // it('can return latest Angular version from bigger array', async(() => {
-  //   service.angularVersionSubject$.subscribe((version: string) => {
-  //     expect(version).toBe('2.0.0');
-  //   });
-  //   const versioned1 = Object.assign({}, response, { name: '1.0.0' });
-  //   const versioned2 = Object.assign({}, response, { name: '2.0.0' });
-
-  //   service.getAngularLatestVersion();
-  //   const request: TestRequest =
-  //     controller.expectOne('https://api.github.com/repos/angular/angular/tags');
-  //   request.flush([response, response, versioned2, versioned1]);
-  // }));
+  //   controller.expectOne('https://api.github.com/repos/angular/angular/tags')
+  //     .flush(undefined, { status: 204, statusText: '' });
+  // });
 });

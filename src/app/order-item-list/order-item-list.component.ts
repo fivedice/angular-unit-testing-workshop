@@ -1,16 +1,22 @@
-import { Component, ChangeDetectionStrategy, Output, EventEmitter, ChangeDetectorRef, Input } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  Input
+} from "@angular/core";
 
-import { OrderItem } from '../models/order-item.interface';
-import { QuantityPipe } from '../common/quantity.pipe';
+import { OrderItem } from "../models/order-item.interface";
+import { QuantityPipe } from "../common/quantity.pipe";
 
 @Component({
-  selector: 'app-order-item-list',
-  templateUrl: './order-item-list.component.html',
-  styleUrls: ['./order-item-list.component.scss'],
+  selector: "app-order-item-list",
+  templateUrl: "./order-item-list.component.html",
+  styleUrls: ["./order-item-list.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderItemListComponent {
-
   @Output()
   selectionChange: EventEmitter<OrderItem[]> = new EventEmitter<OrderItem[]>();
   @Output()
@@ -19,7 +25,7 @@ export class OrderItemListComponent {
   @Input()
   orderItems: OrderItem[] = [];
 
-  constructor(private changeDetector: ChangeDetectorRef) { }
+  constructor(private changeDetector: ChangeDetectorRef) {}
 
   getItemId(orderItem: OrderItem): number {
     return orderItem.id;
@@ -49,5 +55,4 @@ export class OrderItemListComponent {
     this.itemsChange.emit(this.orderItems);
     this.changeDetector.markForCheck();
   }
-
 }

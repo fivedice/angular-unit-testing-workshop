@@ -1,27 +1,37 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrderDetailComponent } from './order-detail.component';
-import { RouterTestingModule, } from '@angular/router/testing';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Subject } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { OrderService } from '../order/order.service';
-import { OrderStatus } from '../models/order-status.enum';
+import { Subject } from 'rxjs';
+import { Params, ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
-describe('OrderDetailComponent', () => {
+fdescribe('OrderDetailComponent', () => {
   let component: OrderDetailComponent;
   let fixture: ComponentFixture<OrderDetailComponent>;
+  // service
+  // params
+  let subject: Subject<Params>;
   let orderService: OrderService;
-  let params: Subject<Params>;
+  // let getOrderSpy;
 
   beforeEach(async(() => {
-    params = new Subject<Params>();
+    // This is the mock for ActivatedRoute.Params
+    subject = new Subject<Params>();
+
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [OrderDetailComponent],
+      imports: [
+        RouterTestingModule
+      ],
       providers: [
         OrderService,
-        { provide: ActivatedRoute, useValue: { params: params } }
+        {
+          provide: ActivatedRoute,
+          useValue: { params: subject } // Here is where we provide the mock
+        }
       ],
+      declarations: [OrderDetailComponent],
+      // isolate
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
@@ -31,33 +41,32 @@ describe('OrderDetailComponent', () => {
     fixture = TestBed.createComponent(OrderDetailComponent);
     component = fixture.componentInstance;
     orderService = TestBed.get(OrderService);
-    fixture.detectChanges();
+    // getOrderSpy = spyOn(orderService, 'getOrder').and.callFake...
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
+  // should be blank by default
   it('should be blank by default', () => {
-    expect(fixture.debugElement.nativeElement.innerText).toContain('Items:\nName:\nStatus:');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toBe('Items:\nName:\nStatus:');
   });
 
-  it('can respond to new route params', () => {
-    const spy = spyOn(orderService, 'getOrder').and.callFake((id) => {
-      return {
-        id: id,
-        name: `Unit Test ${id}`,
-        status: OrderStatus.New,
-        items: []
-      };
+  // can respond to new route params
+  it('responds to router params changing', () => {
+    const spy = spyOn(orderService, 'getOrder');
+    fixture.detectChanges();
+    subject.next({
+      id: 42
     });
-    params.next({ id: 0 });
-    fixture.detectChanges();
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(fixture.debugElement.nativeElement.innerText).toContain('Items:\nName: Unit Test 0\nStatus: 0');
-    params.next({ id: 1 });
-    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledWith(42);
+    subject.next({
+      id: 1
+    });
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(fixture.debugElement.nativeElement.innerText).toContain('Items:\nName: Unit Test 1\nStatus: 0');
+    expect(spy).toHaveBeenCalledWith(1);
   });
 });
